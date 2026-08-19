@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GroceryFlow | Inventory Dashboard</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+
+        .sidebar {
+            width: 235px;
+            background: #172033;
+            color: white;
+            padding: 25px 18px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .brand {
+            font-size: 21px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            padding-left: 10px;
+        }
+
+        .brand span {
+            color: #6ee7b7;
+        }
+
+        .menu-title {
+            font-size: 11px;
+            color: #8e9bb2;
+            text-transform: uppercase;
+            margin: 20px 10px 10px;
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
+            display: block;
+            padding: 12px;
+            margin: 4px 0;
+            border-radius: 7px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background: #27344d;
+            color: white;
+        }
+
+        .menu-item.active {
+            border-left: 3px solid #6ee7b7;
+        }
+
+        /* Main */
+
+        .main {
+            margin-left: 235px;
+            width: calc(100% - 235px);
+            padding: 30px 35px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title h1 {
+            font-size: 27px;
+            margin-bottom: 6px;
+        }
+
+        .page-title p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #d1fae5;
+            color: #065f46;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Cards */
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .card-label {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .card-value {
+            font-size: 27px;
+            font-weight: bold;
+        }
+
+        .card-sub {
+            font-size: 12px;
+            margin-top: 8px;
+            color: #6b7280;
+        }
+
+        .green {
+            color: #059669;
+        }
+
+        .orange {
+            color: #d97706;
+        }
+
+        .red {
+            color: #dc2626;
+        }
+
+        /* Content */
+
+        .content-box {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 22px;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .content-header h2 {
+            font-size: 18px;
+        }
+
+        /* Buttons */
+
+        .btn {
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-primary {
+            background: #059669;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #047857;
+        }
+
+        /* Search */
+
+        .search-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-section input,
+        .search-section select {
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 13px;
+            background: white;
+        }
+
+        .search-section input {
+            flex: 1;
+        }
+
+        .search-section select {
+            min-width: 180px;
+        }
+
+        .search-section input:focus,
+        .search-section select:focus {
+            outline: none;
+            border-color: #059669;
+        }
+
+        .clear-link {
+            padding: 10px 14px;
+            border-radius: 6px;
+            background: #f1f5f9;
+            color: #475569;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        /* Form */
+
+        .form-section {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            padding: 18px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #4b5563;
+        }
+
+        input {
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #059669;
+        }
+
+        .form-actions {
+            margin-top: 15px;
+            text-align: right;
+        }
+
+        /* Table */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #6b7280;
+            font-size: 12px;
+            text-align: left;
+            padding: 13px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        td {
+            padding: 14px 13px;
+            font-size: 13px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        /* Status */
+
+        .status {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .status-in {
+            background: #d1fae5;
+            color: #047857;
+        }
+
+        .status-low {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .status-out {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        /* Actions */
+
+        .action {
+            text-decoration: none;
+            font-size: 12px;
+            margin-right: 8px;
+        }
+
+        .edit {
+            color: #2563eb;
+        }
+
+        .delete {
+            color: #dc2626;
+        }
+
+        /* Responsive */
+
+        @media (max-width: 900px) {
+
+            .sidebar {
+                width: 190px;
+            }
+
+            .main {
+                margin-left: 190px;
+                width: calc(100% - 190px);
+            }
+
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 650px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-section {
+                flex-direction: column;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            🛒 Grocery<span>Flow</span>
+        </div>
+
+        <div class="menu-title">Main</div>
+
+        <a href="/items" class="menu-item active">
+            📦 Inventory
+        </a>
+
+        <a href="#" class="menu-item">
+            📊 Dashboard
+        </a>
+
+        <a href="#" class="menu-item">
+            🔄 Transactions
+        </a>
+
+        <div class="menu-title">Management</div>
+
+        <a href="#" class="menu-item">
+            ⚠ Alerts
+        </a>
+
+        <a href="#" class="menu-item">
+            ⚙ Settings
+        </a>
+
+    </aside>
+
+
+    <!-- Main -->
+
+    <main class="main">
+
+        <!-- Header -->
+
+        <div class="topbar">
+
+            <div class="page-title">
+
+                <h1>Inventory</h1>
+
+                <p>
+                    Manage and monitor your grocery stock.
+                </p>
+
+            </div>
+
+            <div class="user">
+
+                <strong>Admin</strong>
+
+                <div class="avatar">
+                    P
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Summary Cards -->
+
+        <div class="cards">
+
+            <div class="card">
+
+                <div class="card-label">
+                    Total Items
+                </div>
+
+                <div class="card-value"
+                     th:text="${totalItems}">
+                    0
+                </div>
+
+                <div class="card-sub">
+                    Items in catalogue
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-label">
+                    In Stock
+                </div>
+
+                <div class="card-value green"
+                     th:text="${inStockCount}">
+                    0
+                </div>
+
+                <div class="card-sub">
+                    Above reorder level
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-label">
+                    Low Stock
+                </div>
+
+                <div class="card-value orange"
+                     th:text="${lowStockCount}">
+                    0
+                </div>
+
+                <div class="card-sub">
+                    Needs attention
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-label">
+                    Out of Stock
+                </div>
+
+                <div class="card-value red"
+                     th:text="${outOfStockCount}">
+                    0
+                </div>
+
+                <div class="card-sub">
+                    Immediate action
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Inventory -->
+
+        <div class="content-box">
+
+            <div class="content-header">
+
+                <h2>Inventory Catalogue</h2>
+
+                <button class="btn btn-primary"
+                        onclick="document.getElementById('add-form').scrollIntoView()">
+
+                    + Add Item
+
+                </button>
+
+            </div>
+
+
+            <!-- Search and Filter -->
+
+            <form class="search-section"
+                  th:action="@{/items}"
+                  method="get">
+
+                <input type="text"
+                       name="keyword"
+                       th:value="${keyword}"
+                       placeholder="Search by item name or category...">
+
+                <select name="category">
+
+                    <option value="All">
+                        All Categories
+                    </option>
+
+                    <option th:each="cat : ${categories}"
+                            th:value="${cat}"
+                            th:text="${cat}"
+                            th:selected="${cat == selectedCategory}">
+                    </option>
+
+                </select>
+
+                <button type="submit"
+                        class="btn btn-primary">
+                    Search
+                </button>
+
+                <a href="/items"
+                   class="clear-link">
+                    Clear
+                </a>
+
+            </form>
+
+
+            <!-- Add Item Form -->
+
+            <div class="form-section"
+                 id="add-form">
+
+                <form th:action="@{/items}"
+                      th:object="${item}"
+                      method="post">
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label>
+                                Item Name
+                            </label>
+
+                            <input type="text"
+                                   th:field="*{name}"
+                                   placeholder="e.g. Rice"
+                                   required>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Category
+                            </label>
+
+                            <input type="text"
+                                   th:field="*{category}"
+                                   placeholder="e.g. Grains">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Quantity
+                            </label>
+
+                            <input type="number"
+                                   th:field="*{quantity}"
+                                   placeholder="e.g. 20"
+                                   min="0"
+                                   required>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Unit
+                            </label>
+
+                            <input type="text"
+                                   th:field="*{unit}"
+                                   placeholder="kg / litre / packet">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Price
+                            </label>
+
+                            <input type="number"
+                                   step="0.01"
+                                   min="0"
+                                   th:field="*{price}"
+                                   placeholder="e.g. 60"
+                                   required>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Reorder Level
+                            </label>
+
+                            <input type="number"
+                                   th:field="*{reorderLevel}"
+                                   placeholder="e.g. 5"
+                                   min="0">
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-actions">
+
+                        <button type="submit"
+                                class="btn btn-primary">
+
+                            Add Item
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <!-- Inventory Table -->
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Item</th>
+                        <th>Category</th>
+                        <th>Quantity</th>
+                        <th>Unit</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+
+                    </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    <tr th:each="item : ${items}">
+
+                        <td th:text="${item.id}">
+                            1
+                        </td>
+
+
+                        <td>
+
+                            <strong th:text="${item.name}">
+                                Rice
+                            </strong>
+
+                        </td>
+
+
+                        <td th:text="${item.category}">
+                            Grains
+                        </td>
+
+
+                        <td th:text="${item.quantity}">
+                            20
+                        </td>
+
+
+                        <td th:text="${item.unit}">
+                            kg
+                        </td>
+
+
+                        <td>
+
+                            ₹<span th:text="${item.price}">
+                                60
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="status status-out"
+                                  th:if="${item.quantity == 0}">
+                                Out of Stock
+                            </span>
+
+                            <span class="status status-low"
+                                  th:if="${item.quantity > 0
+                                  and item.reorderLevel != null
+                                  and item.quantity <= item.reorderLevel}">
+                                Low Stock
+                            </span>
+
+                            <span class="status status-in"
+                                  th:if="${item.quantity > 0
+                                  and (item.reorderLevel == null
+                                  or item.quantity > item.reorderLevel)}">
+                                In Stock
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <a class="action edit"
+                               th:href="@{/items/edit/{id}(id=${item.id})}">
+                                Edit
+                            </a>
+
+                            <a class="action delete"
+                               th:href="@{/items/delete/{id}(id=${item.id})}"
+                               onclick="return confirm('Delete this item?');">
+                                Delete
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- Empty result -->
+
+                    <tr th:if="${#lists.isEmpty(items)}">
+
+                        <td colspan="8"
+                            style="text-align:center;
+                                   padding:35px;
+                                   color:#6b7280;">
+
+                            No inventory items found.
+
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
