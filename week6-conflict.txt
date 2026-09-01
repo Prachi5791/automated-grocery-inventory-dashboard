@@ -1,1 +1,1 @@
-Week 6 release baseline - exception alerts
+Week 6 release baseline - inventory transactions and exception alerts

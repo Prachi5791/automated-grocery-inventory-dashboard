@@ -4,7 +4,9 @@
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>GroceryFlow | Inventory Dashboard</title>
 
@@ -22,12 +24,14 @@
             color: #1f2937;
         }
 
+        /* ---------- Layout ---------- */
+
         .dashboard {
             display: flex;
             min-height: 100vh;
         }
 
-        /* Sidebar */
+        /* ---------- Sidebar ---------- */
 
         .sidebar {
             width: 235px;
@@ -79,13 +83,15 @@
             border-left: 3px solid #6ee7b7;
         }
 
-        /* Main */
+        /* ---------- Main ---------- */
 
         .main {
             margin-left: 235px;
             width: calc(100% - 235px);
             padding: 30px 35px;
         }
+
+        /* ---------- Header ---------- */
 
         .topbar {
             display: flex;
@@ -122,7 +128,7 @@
             font-weight: bold;
         }
 
-        /* Cards */
+        /* ---------- Summary Cards ---------- */
 
         .cards {
             display: grid;
@@ -167,7 +173,7 @@
             color: #dc2626;
         }
 
-        /* Content */
+        /* ---------- Content ---------- */
 
         .content-box {
             background: white;
@@ -187,7 +193,7 @@
             font-size: 18px;
         }
 
-        /* Buttons */
+        /* ---------- Buttons ---------- */
 
         .btn {
             border: none;
@@ -195,6 +201,8 @@
             border-radius: 6px;
             cursor: pointer;
             font-size: 13px;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .btn-primary {
@@ -206,7 +214,7 @@
             background: #047857;
         }
 
-        /* Search */
+        /* ---------- Search ---------- */
 
         .search-section {
             display: flex;
@@ -246,7 +254,7 @@
             font-size: 13px;
         }
 
-        /* Form */
+        /* ---------- Form ---------- */
 
         .form-section {
             background: #f8fafc;
@@ -291,7 +299,7 @@
             text-align: right;
         }
 
-        /* Table */
+        /* ---------- Table ---------- */
 
         .table-wrapper {
             overflow-x: auto;
@@ -321,7 +329,7 @@
             background: #fafafa;
         }
 
-        /* Status */
+        /* ---------- Status ---------- */
 
         .status {
             display: inline-block;
@@ -346,7 +354,7 @@
             color: #b91c1c;
         }
 
-        /* Actions */
+        /* ---------- Actions ---------- */
 
         .action {
             text-decoration: none;
@@ -362,7 +370,7 @@
             color: #dc2626;
         }
 
-        /* Responsive */
+        /* ---------- Responsive ---------- */
 
         @media (max-width: 900px) {
 
@@ -417,7 +425,7 @@
 
 <div class="dashboard">
 
-    <!-- Sidebar -->
+    <!-- ================= SIDEBAR ================= -->
 
     <aside class="sidebar">
 
@@ -425,34 +433,44 @@
             🛒 Grocery<span>Flow</span>
         </div>
 
-        <div class="menu-title">Main</div>
+        <div class="menu-title">
+            Main
+        </div>
 
-        <a href="/items" class="menu-item active">
+        <a href="/items"
+           class="menu-item active">
             📦 Inventory
         </a>
 
-        <a href="#" class="menu-item">
+        <a href="#"
+           class="menu-item">
             📊 Dashboard
         </a>
 
-        <a href="#" class="menu-item">
+        <!-- WEEK 6: TRANSACTIONS -->
+        <a href="/transactions"
+           class="menu-item">
             🔄 Transactions
         </a>
 
-        <div class="menu-title">Management</div>
+        <div class="menu-title">
+            Management
+        </div>
 
-        <a href="#" class="menu-item">
-            ⚠ Alerts
-        </a>
+        <a href="/alerts"
+   class="menu-item">
+    ⚠ Alerts
+</a>
 
-        <a href="#" class="menu-item">
+        <a href="#"
+           class="menu-item">
             ⚙ Settings
         </a>
 
     </aside>
 
 
-    <!-- Main -->
+    <!-- ================= MAIN ================= -->
 
     <main class="main">
 
@@ -483,7 +501,7 @@
         </div>
 
 
-        <!-- Summary Cards -->
+        <!-- ================= SUMMARY CARDS ================= -->
 
         <div class="cards">
 
@@ -561,13 +579,15 @@
         </div>
 
 
-        <!-- Inventory -->
+        <!-- ================= INVENTORY ================= -->
 
         <div class="content-box">
 
             <div class="content-header">
 
-                <h2>Inventory Catalogue</h2>
+                <h2>
+                    Inventory Catalogue
+                </h2>
 
                 <button class="btn btn-primary"
                         onclick="document.getElementById('add-form').scrollIntoView()">
@@ -579,7 +599,7 @@
             </div>
 
 
-            <!-- Search and Filter -->
+            <!-- ================= SEARCH & FILTER ================= -->
 
             <form class="search-section"
                   th:action="@{/items}"
@@ -592,32 +612,40 @@
 
                 <select name="category">
 
-                    <option value="All">
+                    <option value="All"
+                            th:selected="${selectedCategory == null or selectedCategory == 'All'}">
+
                         All Categories
+
                     </option>
 
                     <option th:each="cat : ${categories}"
                             th:value="${cat}"
                             th:text="${cat}"
                             th:selected="${cat == selectedCategory}">
+
                     </option>
 
                 </select>
 
                 <button type="submit"
                         class="btn btn-primary">
+
                     Search
+
                 </button>
 
                 <a href="/items"
                    class="clear-link">
+
                     Clear
+
                 </a>
 
             </form>
 
 
-            <!-- Add Item Form -->
+            <!-- ================= ADD ITEM FORM ================= -->
 
             <div class="form-section"
                  id="add-form">
@@ -627,6 +655,9 @@
                       method="post">
 
                     <div class="form-grid">
+
+
+                        <!-- Item Name -->
 
                         <div class="form-group">
 
@@ -642,6 +673,8 @@
                         </div>
 
 
+                        <!-- Category -->
+
                         <div class="form-group">
 
                             <label>
@@ -654,6 +687,8 @@
 
                         </div>
 
+
+                        <!-- Quantity -->
 
                         <div class="form-group">
 
@@ -670,6 +705,8 @@
                         </div>
 
 
+                        <!-- Unit -->
+
                         <div class="form-group">
 
                             <label>
@@ -682,6 +719,8 @@
 
                         </div>
 
+
+                        <!-- Price -->
 
                         <div class="form-group">
 
@@ -698,6 +737,8 @@
 
                         </div>
 
+
+                        <!-- Reorder Level -->
 
                         <div class="form-group">
 
@@ -731,7 +772,7 @@
             </div>
 
 
-            <!-- Inventory Table -->
+            <!-- ================= INVENTORY TABLE ================= -->
 
             <div class="table-wrapper">
 
@@ -742,12 +783,19 @@
                     <tr>
 
                         <th>ID</th>
+
                         <th>Item</th>
+
                         <th>Category</th>
+
                         <th>Quantity</th>
+
                         <th>Unit</th>
+
                         <th>Price</th>
+
                         <th>Status</th>
+
                         <th>Actions</th>
 
                     </tr>
@@ -759,10 +807,14 @@
 
                     <tr th:each="item : ${items}">
 
+                        <!-- ID -->
+
                         <td th:text="${item.id}">
                             1
                         </td>
 
+
+                        <!-- Item -->
 
                         <td>
 
@@ -773,20 +825,28 @@
                         </td>
 
 
+                        <!-- Category -->
+
                         <td th:text="${item.category}">
                             Grains
                         </td>
 
+
+                        <!-- Quantity -->
 
                         <td th:text="${item.quantity}">
                             20
                         </td>
 
 
+                        <!-- Unit -->
+
                         <td th:text="${item.unit}">
                             kg
                         </td>
 
+
+                        <!-- Price -->
 
                         <td>
 
@@ -797,41 +857,66 @@
                         </td>
 
 
+                        <!-- Status -->
+
                         <td>
 
+                            <!-- OUT OF STOCK -->
+
                             <span class="status status-out"
-                                  th:if="${item.quantity == 0}">
+                                  th:if="${item.quantity != null and item.quantity == 0}">
+
                                 Out of Stock
+
                             </span>
+
+
+                            <!-- LOW STOCK -->
 
                             <span class="status status-low"
-                                  th:if="${item.quantity > 0
+                                  th:if="${item.quantity != null
+                                  and item.quantity > 0
                                   and item.reorderLevel != null
                                   and item.quantity <= item.reorderLevel}">
+
                                 Low Stock
+
                             </span>
 
+
+                            <!-- IN STOCK -->
+
                             <span class="status status-in"
-                                  th:if="${item.quantity > 0
+                                  th:if="${item.quantity != null
+                                  and item.quantity > 0
                                   and (item.reorderLevel == null
                                   or item.quantity > item.reorderLevel)}">
+
                                 In Stock
+
                             </span>
 
                         </td>
 
 
+                        <!-- Actions -->
+
                         <td>
 
                             <a class="action edit"
                                th:href="@{/items/edit/{id}(id=${item.id})}">
+
                                 Edit
+
                             </a>
+
 
                             <a class="action delete"
                                th:href="@{/items/delete/{id}(id=${item.id})}"
                                onclick="return confirm('Delete this item?');">
+
                                 Delete
+
                             </a>
 
                         </td>
