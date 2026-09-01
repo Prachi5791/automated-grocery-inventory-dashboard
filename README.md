@@ -1,82 +1,46 @@
-\# Automated Grocery Inventory Dashboard
+## Week 6 MVP Status
 
+### Completed MVP Features
 
+- Item catalogue with create, update, and delete functionality.
+- Inventory search and category filtering.
+- Stock In transactions.
+- Stock Out transactions.
+- Automatic inventory quantity updates after transactions.
+- Stock status classification:
+  - In Stock
+  - Low Stock
+  - Out of Stock
+- Inventory exception alerts for low-stock and out-of-stock items.
+- Transaction history with transaction type, quantity, date/time, and notes.
 
-\## Project Overview
+### Git Collaboration Completed
 
+- Developed inventory transactions using the `feature/inventory-transactions` branch.
+- Created and resolved a Git merge conflict.
+- Merged the completed Week 6 work into the `develop` branch.
+- Created the Week 6 release baseline.
+- Tagged the Week 6 release as `v0.6.0`.
+- Pushed the release tag to GitHub.
 
+### Updated Backlog
 
-The Automated Grocery Inventory Dashboard is a Spring Boot and MySQL based web application designed to manage grocery inventory efficiently.
+#### Completed in Week 6
+- [x] Item catalogue
+- [x] Inventory search and filtering
+- [x] Stock In / Stock Out transactions
+- [x] Inventory quantity updates
+- [x] Stock status
+- [x] Exception alerts
+- [x] Transaction history
+- [x] Feature branch workflow
+- [x] Merge conflict creation and resolution
+- [x] Release tagging
 
-
-
-The system provides a centralized platform for managing grocery items, inventory levels, stock transactions, and stock status. It is intended to reduce manual inventory management and provide a structured way to monitor stock information.
-
-
-
-\## Objectives
-
-
-
-\- Manage grocery item information.
-
-\- Maintain current inventory quantities.
-
-\- Record stock-in and stock-out transactions.
-
-\- Monitor stock availability.
-
-\- Identify low-stock items.
-
-\- Provide a structured backend for future dashboard and automation features.
-
-
-
-\## Technology Stack
-
-
-
-\- \*\*Backend:\*\* Java, Spring Boot
-
-\- \*\*Build Tool:\*\* Maven
-
-\- \*\*Database:\*\* MySQL
-
-\- \*\*ORM:\*\* Spring Data JPA / Hibernate
-
-\- \*\*Frontend:\*\* Thymeleaf
-
-\- \*\*Version Control:\*\* Git
-
-\- \*\*Repository:\*\* GitHub
-
-
-
-\## Project Structure
-
-
-
-```text
-
-automated-grocery-inventory-dashboard/
-
-├── src/
-
-│   ├── main/
-
-│   │   ├── java/
-
-│   │   └── resources/
-
-│   └── test/
-
-├── .mvn/
-
-├── .gitignore
-
-├── pom.xml
-
-├── mvnw
-
-└── mvnw.cmd
-
+#### Future Work
+- [ ] Dashboard analytics and visualizations
+- [ ] Automated reorder recommendations
+- [ ] Supplier management
+- [ ] Authentication and role-based access
+- [ ] Automated notifications
+- [ ] Advanced reporting
