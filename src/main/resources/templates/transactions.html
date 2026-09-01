@@ -416,10 +416,10 @@
             Management
         </div>
 
-        <a href="#"
-           class="menu-item">
-            ⚠ Alerts
-        </a>
+        <a href="/alerts"
+   class="menu-item">
+    ⚠ Alerts
+</a>
 
         <a href="#"
            class="menu-item">
@@ -768,7 +768,7 @@
 
                             <span class="quantity-in"
                                   th:if="${transaction.type == 'IN'}"
-                                  th:text="'+' + transaction.quantity">
+                                  th:text="'+' + ${transaction.quantity}">
 
                                 +5
 
@@ -777,7 +777,7 @@
 
                             <span class="quantity-out"
                                   th:if="${transaction.type == 'OUT'}"
-                                  th:text="'-' + transaction.quantity">
+                                  th:text="'-' + ${transaction.quantity}">
 
                                 -5
 

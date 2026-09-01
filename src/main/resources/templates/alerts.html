@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>GroceryFlow | Alerts</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        .sidebar {
+            width: 235px;
+            background: #172033;
+            color: white;
+            padding: 25px 18px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .brand {
+            font-size: 21px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            padding-left: 10px;
+        }
+
+        .brand span {
+            color: #6ee7b7;
+        }
+
+        .menu-title {
+            font-size: 11px;
+            color: #8e9bb2;
+            text-transform: uppercase;
+            margin: 20px 10px 10px;
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
+            display: block;
+            padding: 12px;
+            margin: 4px 0;
+            border-radius: 7px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background: #27344d;
+            color: white;
+        }
+
+        .menu-item.active {
+            border-left: 3px solid #6ee7b7;
+        }
+
+        .main {
+            margin-left: 235px;
+            padding: 30px 35px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title h1 {
+            font-size: 27px;
+            margin-bottom: 6px;
+        }
+
+        .page-title p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #d1fae5;
+            color: #065f46;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .summary {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .summary-label {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .summary-value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .alert-section {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 22px;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 18px;
+        }
+
+        .alert-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .alert-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .low-alert {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+        }
+
+        .out-alert {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+        }
+
+        .item-info h3 {
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+
+        .item-info p {
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .badge {
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .low-badge {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .out-badge {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .empty {
+            padding: 25px;
+            text-align: center;
+            color: #059669;
+            background: #ecfdf5;
+            border-radius: 7px;
+            font-size: 13px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        @media (max-width: 650px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<aside class="sidebar">
+
+    <div class="brand">
+        🛒 Grocery<span>Flow</span>
+    </div>
+
+    <div class="menu-title">
+        Main
+    </div>
+
+    <a href="/items"
+       class="menu-item">
+        📦 Inventory
+    </a>
+
+    <a href="#"
+       class="menu-item">
+        📊 Dashboard
+    </a>
+
+    <a href="/transactions"
+       class="menu-item">
+        🔄 Transactions
+    </a>
+
+    <div class="menu-title">
+        Management
+    </div>
+
+    <a href="/alerts"
+       class="menu-item active">
+        ⚠ Alerts
+    </a>
+
+    <a href="#"
+       class="menu-item">
+        ⚙ Settings
+    </a>
+
+</aside>
+
+
+<main class="main">
+
+    <div class="topbar">
+
+        <div class="page-title">
+
+            <h1>Inventory Alerts</h1>
+
+            <p>
+                Items that require stock attention.
+            </p>
+
+        </div>
+
+        <div class="user">
+
+            <strong>Admin</strong>
+
+            <div class="avatar">
+                P
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <a href="/items"
+       class="back-link">
+
+        ← Back to Inventory
+
+    </a>
+
+
+    <!-- TOTAL ALERTS -->
+
+    <div class="summary">
+
+        <div class="summary-label">
+            Total Active Alerts
+        </div>
+
+        <div class="summary-value"
+             th:text="${totalAlerts}">
+
+            0
+
+        </div>
+
+    </div>
+
+
+    <!-- LOW STOCK -->
+
+    <div class="alert-section">
+
+        <h2 class="section-title">
+            Low Stock
+        </h2>
+
+
+        <div th:each="item : ${lowStockItems}"
+             class="alert-card low-alert">
+
+            <div class="item-info">
+
+                <h3 th:text="${item.name}">
+                    Rice
+                </h3>
+
+                <p>
+
+                    Current quantity:
+                    <strong th:text="${item.quantity}">
+                        4
+                    </strong>
+
+                    <span th:text="${item.unit}">
+                        kg
+                    </span>
+
+                    &nbsp;|&nbsp;
+
+                    Reorder level:
+                    <strong th:text="${item.reorderLevel}">
+                        5
+                    </strong>
+
+                </p>
+
+            </div>
+
+            <span class="badge low-badge">
+                LOW STOCK
+            </span>
+
+        </div>
+
+
+        <div th:if="${#lists.isEmpty(lowStockItems)}"
+             class="empty">
+
+            No low-stock items.
+
+        </div>
+
+    </div>
+
+
+    <!-- OUT OF STOCK -->
+
+    <div class="alert-section">
+
+        <h2 class="section-title">
+            Out of Stock
+        </h2>
+
+
+        <div th:each="item : ${outOfStockItems}"
+             class="alert-card out-alert">
+
+            <div class="item-info">
+
+                <h3 th:text="${item.name}">
+                    Milk
+                </h3>
+
+                <p>
+
+                    Current quantity:
+                    <strong>
+                        0
+                    </strong>
+
+                    <span th:text="${item.unit}">
+                        litre
+                    </span>
+
+                    &nbsp;|&nbsp;
+
+                    Reorder level:
+                    <strong th:text="${item.reorderLevel}">
+                        5
+                    </strong>
+
+                </p>
+
+            </div>
+
+            <span class="badge out-badge">
+                OUT OF STOCK
+            </span>
+
+        </div>
+
+
+        <div th:if="${#lists.isEmpty(outOfStockItems)}"
+             class="empty">
+
+            No out-of-stock items.
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+
+</html>
