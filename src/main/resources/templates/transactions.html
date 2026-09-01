@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>GroceryFlow | Transactions</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        /* ================= LAYOUT ================= */
+
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            width: 235px;
+            background: #172033;
+            color: white;
+            padding: 25px 18px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .brand {
+            font-size: 21px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            padding-left: 10px;
+        }
+
+        .brand span {
+            color: #6ee7b7;
+        }
+
+        .menu-title {
+            font-size: 11px;
+            color: #8e9bb2;
+            text-transform: uppercase;
+            margin: 20px 10px 10px;
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
+            display: block;
+            padding: 12px;
+            margin: 4px 0;
+            border-radius: 7px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background: #27344d;
+            color: white;
+        }
+
+        .menu-item.active {
+            border-left: 3px solid #6ee7b7;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 235px;
+            width: calc(100% - 235px);
+            padding: 30px 35px;
+        }
+
+        /* ================= HEADER ================= */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title h1 {
+            font-size: 27px;
+            margin-bottom: 6px;
+        }
+
+        .page-title p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #d1fae5;
+            color: #065f46;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* ================= CONTENT ================= */
+
+        .content-box {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 22px;
+            margin-bottom: 25px;
+        }
+
+        .content-header {
+            margin-bottom: 20px;
+        }
+
+        .content-header h2 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .content-header p {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        /* ================= TRANSACTION FORMS ================= */
+
+        .transaction-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .transaction-card {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 9px;
+            padding: 20px;
+        }
+
+        .transaction-card h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .transaction-card p {
+            color: #6b7280;
+            font-size: 12px;
+            margin-bottom: 18px;
+        }
+
+        .stock-in-title {
+            color: #059669;
+        }
+
+        .stock-out-title {
+            color: #dc2626;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #4b5563;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 11px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 13px;
+            background: white;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #059669;
+        }
+
+        .btn {
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            width: 100%;
+        }
+
+        .btn-in {
+            background: #059669;
+            color: white;
+        }
+
+        .btn-in:hover {
+            background: #047857;
+        }
+
+        .btn-out {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-out:hover {
+            background: #b91c1c;
+        }
+
+        /* ================= ERROR ================= */
+
+        .error-box {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
+            padding: 12px 15px;
+            border-radius: 7px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        /* ================= TABLE ================= */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #6b7280;
+            font-size: 12px;
+            text-align: left;
+            padding: 13px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        td {
+            padding: 14px 13px;
+            font-size: 13px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        /* ================= TRANSACTION TYPE ================= */
+
+        .transaction-type {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .type-in {
+            background: #d1fae5;
+            color: #047857;
+        }
+
+        .type-out {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .quantity-in {
+            color: #059669;
+            font-weight: bold;
+        }
+
+        .quantity-out {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 35px;
+            color: #6b7280;
+        }
+
+        /* ================= BACK LINK ================= */
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 900px) {
+
+            .sidebar {
+                width: 190px;
+            }
+
+            .main {
+                margin-left: 190px;
+                width: calc(100% - 190px);
+            }
+
+            .transaction-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 650px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px;
+            }
+
+            .transaction-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            🛒 Grocery<span>Flow</span>
+        </div>
+
+        <div class="menu-title">
+            Main
+        </div>
+
+        <a th:href="@{/items}"
+   class="menu-item">
+    📦 Inventory
+</a>
+
+        <a href="#"
+           class="menu-item">
+            📊 Dashboard
+        </a>
+
+        <a th:href="@{/transactions}"
+   class="menu-item active">
+    🔄 Transactions
+</a>
+
+        <div class="menu-title">
+            Management
+        </div>
+
+        <a href="#"
+           class="menu-item">
+            ⚠ Alerts
+        </a>
+
+        <a href="#"
+           class="menu-item">
+            ⚙ Settings
+        </a>
+
+    </aside>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+        <!-- Header -->
+
+        <div class="topbar">
+
+            <div class="page-title">
+
+                <h1>Transactions</h1>
+
+                <p>
+                    Record and monitor stock movement.
+                </p>
+
+            </div>
+
+            <div class="user">
+
+                <strong>Admin</strong>
+
+                <div class="avatar">
+                    P
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <a href="/items"
+           class="back-link">
+
+            ← Back to Inventory
+
+        </a>
+
+
+        <!-- ================= ERROR ================= -->
+
+        <div class="error-box"
+             th:if="${error != null}"
+             th:text="${error}">
+
+            Transaction error.
+
+        </div>
+
+
+        <!-- ================= TRANSACTION ACTIONS ================= -->
+
+        <div class="content-box">
+
+            <div class="content-header">
+
+                <h2>
+                    Stock Movement
+                </h2>
+
+                <p>
+                    Update inventory quantity using Stock In or Stock Out.
+                </p>
+
+            </div>
+
+
+            <div class="transaction-grid">
+
+
+                <!-- ================= STOCK IN ================= -->
+
+                <div class="transaction-card">
+
+                    <h3 class="stock-in-title">
+                        Stock In
+                    </h3>
+
+                    <p>
+                        Add newly received stock to inventory.
+                    </p>
+
+
+                    <form th:action="@{/transactions/stock-in}"
+                          method="post">
+
+
+                        <!-- Item -->
+
+                        <div class="form-group">
+
+                            <label>
+                                Select Item
+                            </label>
+
+                            <select name="itemId"
+                                    required>
+
+                                <option value="">
+                                    Select an item
+                                </option>
+
+                                <option th:each="item : ${items}"
+                                        th:value="${item.id}"
+                                        th:text="${item.name + ' (' + item.quantity + ' ' + item.unit + ')'}">
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Quantity -->
+
+                        <div class="form-group">
+
+                            <label>
+                                Quantity
+                            </label>
+
+                            <input type="number"
+                                   name="quantity"
+                                   min="1"
+                                   placeholder="e.g. 10"
+                                   required>
+
+                        </div>
+
+
+                        <!-- Note -->
+
+                        <div class="form-group">
+
+                            <label>
+                                Note
+                            </label>
+
+                            <textarea name="note"
+                                      placeholder="e.g. New supplier delivery"></textarea>
+
+                        </div>
+
+
+                        <button type="submit"
+                                class="btn btn-in">
+
+                            + Stock In
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+
+                <!-- ================= STOCK OUT ================= -->
+
+                <div class="transaction-card">
+
+                    <h3 class="stock-out-title">
+                        Stock Out
+                    </h3>
+
+                    <p>
+                        Remove stock when products are sold or used.
+                    </p>
+
+
+                    <form th:action="@{/transactions/stock-out}"
+                          method="post">
+
+
+                        <!-- Item -->
+
+                        <div class="form-group">
+
+                            <label>
+                                Select Item
+                            </label>
+
+                            <select name="itemId"
+                                    required>
+
+                                <option value="">
+                                    Select an item
+                                </option>
+
+                                <option th:each="item : ${items}"
+                                        th:value="${item.id}"
+                                        th:text="${item.name + ' (' + item.quantity + ' ' + item.unit + ')'}">
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Quantity -->
+
+                        <div class="form-group">
+
+                            <label>
+                                Quantity
+                            </label>
+
+                            <input type="number"
+                                   name="quantity"
+                                   min="1"
+                                   placeholder="e.g. 5"
+                                   required>
+
+                        </div>
+
+
+                        <!-- Note -->
+
+                        <div class="form-group">
+
+                            <label>
+                                Note
+                            </label>
+
+                            <textarea name="note"
+                                      placeholder="e.g. Customer sale"></textarea>
+
+                        </div>
+
+
+                        <button type="submit"
+                                class="btn btn-out">
+
+                            − Stock Out
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= TRANSACTION HISTORY ================= -->
+
+        <div class="content-box">
+
+            <div class="content-header">
+
+                <h2>
+                    Transaction History
+                </h2>
+
+                <p>
+                    Recent stock movements are recorded below.
+                </p>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Item</th>
+
+                        <th>Type</th>
+
+                        <th>Quantity</th>
+
+                        <th>Date & Time</th>
+
+                        <th>Note</th>
+
+                    </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    <tr th:each="transaction : ${transactions}">
+
+
+                        <!-- ID -->
+
+                        <td th:text="${transaction.id}">
+                            1
+                        </td>
+
+
+                        <!-- Item -->
+
+                        <td>
+
+                            <strong th:text="${transaction.item.name}">
+                                Rice
+                            </strong>
+
+                        </td>
+
+
+                        <!-- Type -->
+
+                        <td>
+
+                            <span class="transaction-type type-in"
+                                  th:if="${transaction.type == 'IN'}">
+
+                                STOCK IN
+
+                            </span>
+
+
+                            <span class="transaction-type type-out"
+                                  th:if="${transaction.type == 'OUT'}">
+
+                                STOCK OUT
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- Quantity -->
+
+                        <td>
+
+                            <span class="quantity-in"
+                                  th:if="${transaction.type == 'IN'}"
+                                  th:text="'+' + transaction.quantity">
+
+                                +5
+
+                            </span>
+
+
+                            <span class="quantity-out"
+                                  th:if="${transaction.type == 'OUT'}"
+                                  th:text="'-' + transaction.quantity">
+
+                                -5
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- Date -->
+
+                        <td th:text="${#temporals.format(transaction.createdAt, 'dd-MM-yyyy HH:mm')}">
+
+                            01-09-2026 10:30
+
+                        </td>
+
+
+                        <!-- Note -->
+
+                        <td th:text="${transaction.note != null and !#strings.isEmpty(transaction.note)
+                                      ? transaction.note
+                                      : '-'}">
+
+                            -
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- Empty history -->
+
+                    <tr th:if="${#lists.isEmpty(transactions)}">
+
+                        <td colspan="6"
+                            class="empty-message">
+
+                            No transactions recorded yet.
+
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
