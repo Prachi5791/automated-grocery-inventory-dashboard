@@ -58,6 +58,7 @@ pipeline {
                     "$TOMCAT_HOME/webapps/$WAR_NAME"
 
                     echo "WAR deployed to Tomcat."
+                    echo "Application environment: ${APP_ENV}"
                     echo "Application URL:"
                     echo "http://localhost:8082/automated-grocery-inventory-dashboard/items"
                 '''
@@ -67,7 +68,7 @@ pipeline {
 
     post {
         success {
-            echo 'Pipeline completed successfully.'
+            echo "Pipeline completed successfully for environment: ${APP_ENV}"
         }
 
         failure {
