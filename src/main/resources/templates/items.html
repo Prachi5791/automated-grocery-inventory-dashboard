@@ -437,7 +437,7 @@
             Main
         </div>
 
-        <a href="/items"
+        <a th:href="@{/items}"
            class="menu-item active">
             📦 Inventory
         </a>
@@ -448,7 +448,7 @@
         </a>
 
         <!-- WEEK 6: TRANSACTIONS -->
-        <a href="/transactions"
+        <a th:href="@{/transactions}"
            class="menu-item">
             🔄 Transactions
         </a>
@@ -457,10 +457,10 @@
             Management
         </div>
 
-        <a href="/alerts"
-   class="menu-item">
-    ⚠ Alerts
-</a>
+        <a th:href="@{/alerts}"
+        class="menu-item">
+            ⚠ Alerts
+        </a>
 
         <a href="#"
            class="menu-item">
@@ -635,7 +635,7 @@
 
                 </button>
 
-                <a href="/items"
+                <a th:href="@{/items}"
                    class="clear-link">
 
                     Clear
