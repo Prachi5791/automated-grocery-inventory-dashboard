@@ -22,7 +22,7 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Test') {
             steps {
                 sh '''
                     export JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
@@ -33,6 +33,12 @@ pipeline {
 
                     ./mvnw clean test
                 '''
+            }
+        }
+
+        stage('Publish Test Report') {
+            steps {
+                junit 'target/surefire-reports/*.xml'
             }
         }
 
