@@ -36,12 +36,6 @@ pipeline {
             }
         }
 
-        stage('Publish Test Report') {
-            steps {
-                junit 'target/surefire-reports/*.xml'
-            }
-        }
-
         stage('Package') {
             steps {
                 sh '''
@@ -73,6 +67,14 @@ pipeline {
     }
 
     post {
+
+        always {
+            junit(
+                testResults: 'target/surefire-reports/*.xml',
+                allowEmptyResults: true
+            )
+        }
+
         success {
             echo "Pipeline completed successfully for environment: ${APP_ENV}"
         }
