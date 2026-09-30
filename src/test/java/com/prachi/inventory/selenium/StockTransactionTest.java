@@ -532,21 +532,30 @@ class StockTransactionTest extends BaseSeleniumTest {
         // STEP 6: Locate Stock Out item selector FRESH
         // ---------------------------------------------------------
 
-        WebElement stockOutSelectElement = wait.until(
-                webDriver -> webDriver.findElement(
-                        By.xpath(
-                                "//form[contains(@action,"
-                                        + "'/transactions/stock-out')]"
-                                        + "//select[@name='itemId']"
-                        )
-                )
+        By stockOutSelectLocator =
+        By.xpath(
+                "//form[contains(@action,"
+                        + "'/transactions/stock-out')]"
+                        + "//select[@name='itemId']"
         );
 
-        Select stockOutItem =
-                new Select(stockOutSelectElement);
+        wait.until(webDriver -> {
+        try {
+                WebElement element =
+                        webDriver.findElement(stockOutSelectLocator);
 
-        // Use stable database ID, not visible text.
-        stockOutItem.selectByValue(riceItemId);
+                Select select = new Select(element);
+
+                select.selectByValue(riceItemId);
+
+                return true;
+
+        } catch (org.openqa.selenium.StaleElementReferenceException e) {
+                return false;
+        }
+        });
+
+        
 
         // ---------------------------------------------------------
         // STEP 7: Stock Out 5 units
