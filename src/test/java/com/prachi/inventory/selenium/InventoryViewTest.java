@@ -21,9 +21,9 @@ class InventoryViewTest extends BaseSeleniumTest {
 
         // Step 2: Verify page title
         assertEquals(
-                "GroceryFlow | Inventory Dashboard",
-                driver.getTitle()
-        );
+        "WRONG TITLE - DELIBERATE DEFECT",
+        driver.getTitle()
+);
 
        
 
