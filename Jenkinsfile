@@ -1,14 +1,6 @@
 pipeline {
     agent any
 
-    parameters {
-        choice(
-            name: 'APP_ENV',
-            choices: ['development', 'production'],
-            description: 'Application environment for deployment'
-        )
-    }
-
     environment {
         REGISTRY = 'localhost:5001'
         IMAGE_NAME = 'grocery-inventory-dashboard'
@@ -91,7 +83,6 @@ pipeline {
                 sh '''
                     export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
 
-                    echo "Deploying environment: ${APP_ENV}"
                     echo "Image: ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}"
 
                     echo "Stopping old container if it exists..."
@@ -146,6 +137,7 @@ pipeline {
     }
 
     post {
+
         always {
             junit(
                 testResults: 'target/surefire-reports/*.xml',
@@ -156,12 +148,11 @@ pipeline {
         success {
             echo "Week 12 Docker deployment completed successfully."
             echo "Image: ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}"
-            echo "Environment: ${APP_ENV}"
             echo "Application: http://localhost:${HOST_PORT}/automated-grocery-inventory-dashboard/items"
         }
 
         failure {
-            echo 'Pipeline failed. Docker deployment was not completed.'
+            echo 'Pipeline failed. Check the stage logs.'
         }
     }
 }
