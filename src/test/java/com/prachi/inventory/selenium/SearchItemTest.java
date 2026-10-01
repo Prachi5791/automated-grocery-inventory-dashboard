@@ -3,7 +3,7 @@ package com.prachi.inventory.selenium;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
@@ -25,10 +25,8 @@ class SearchItemTest extends BaseSeleniumTest {
         driver.get(BASE_URL + "/items");
 
         // 2. Enter item name in search field
-        WebElement searchInput =
-                driver.findElement(By.name("keyword"));
-
-        searchInput.sendKeys(searchItem);
+        driver.findElement(By.name("keyword"))
+                .sendKeys(searchItem);
 
         // 3. Submit search form
         driver.findElement(
@@ -37,25 +35,30 @@ class SearchItemTest extends BaseSeleniumTest {
                 )
         ).click();
 
-        // 4. Wait for search result
+        // 4. Define locator for the search result
+        By riceResult = By.xpath(
+                "//strong[contains(" +
+                        "translate(normalize-space(), " +
+                        "'ABCDEFGHIJKLMNOPQRSTUVWXYZ', " +
+                        "'abcdefghijklmnopqrstuvwxyz'), " +
+                        "'rice')]"
+        );
+
+        // 5. Wait until the search result is displayed
         WebDriverWait wait =
                 new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        WebElement result = wait.until(
-                webDriver -> webDriver.findElement(
-                        By.xpath(
-                                "//strong[contains(" +
-                                        "translate(normalize-space(), " +
-                                        "'ABCDEFGHIJKLMNOPQRSTUVWXYZ', " +
-                                        "'abcdefghijklmnopqrstuvwxyz'), " +
-                                        "'rice')]"
-                        )
-                )
-        );
+        boolean resultDisplayed = wait.until(webDriver -> {
+            try {
+                return webDriver.findElement(riceResult).isDisplayed();
+            } catch (StaleElementReferenceException e) {
+                return false;
+            }
+        });
 
-        // 5. Verify the searched item is displayed
+        // 6. Verify the searched item is displayed
         assertTrue(
-                result.isDisplayed(),
+                resultDisplayed,
                 "Searched item 'rice' was not displayed"
         );
     }
