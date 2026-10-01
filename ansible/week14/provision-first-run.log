@@ -1,0 +1,62 @@
+
+PLAY [Provision Grocery Inventory Dashboard Reliability Target] ****************
+
+TASK [Gathering Facts] *********************************************************
+ok: [localhost]
+
+TASK [Display target information] **********************************************
+ok: [localhost] => {
+    "msg": [
+        "Target host: Prachis-MacBook-Air",
+        "Operating system: MacOSX",
+        "Architecture: arm64",
+        "Application container: grocery-inventory-week14",
+        "Application port: 8084",
+        "Stable image: localhost:5001/grocery-inventory-dashboard:3"
+    ]
+}
+
+TASK [Ensure Week 14 deployment directory exists] ******************************
+ok: [localhost]
+
+TASK [Verify Docker is available] **********************************************
+ok: [localhost]
+
+TASK [Check whether Week 14 container already exists] **************************
+ok: [localhost]
+
+TASK [Remove existing Week 14 container] ***************************************
+skipping: [localhost]
+
+TASK [Pull stable release image] ***********************************************
+changed: [localhost]
+
+TASK [Deploy stable Grocery Inventory release] *********************************
+changed: [localhost]
+
+TASK [Wait for application startup] ********************************************
+Pausing for 15 seconds
+(ctrl+C then 'C' = continue early, ctrl+C then 'A' = abort)
+ok: [localhost]
+
+TASK [Check application HTTP endpoint] *****************************************
+ok: [localhost]
+
+TASK [Get Week 14 container status] ********************************************
+ok: [localhost]
+
+TASK [Display provisioning result] *********************************************
+ok: [localhost] => {
+    "msg": [
+        "Provisioning completed successfully.",
+        "Container: grocery-inventory-week14",
+        "Container status: running",
+        "HTTP health check: 200",
+        "Stable image: localhost:5001/grocery-inventory-dashboard:3",
+        "Application URL: http://localhost:8084/automated-grocery-inventory-dashboard/items"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=11   changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+

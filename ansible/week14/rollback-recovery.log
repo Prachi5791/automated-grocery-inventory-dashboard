@@ -1,0 +1,17 @@
+=== WEEK 14 ROLLBACK / RECOVERY EVIDENCE ===
+
+=== Stable Image ===
+Image=localhost:5001/grocery-inventory-dashboard:3 Status=running
+
+=== Failed Deployment Health Check ===
+Expected result: HTTP request failed due to incorrect port mapping 8084:9999
+
+=== Recovery Health Check ===
+HTTP/1.1 200 
+Content-Type: text/html;charset=UTF-8
+Content-Language: en-US
+Date: Thu, 01 Oct 2026 13:26:51 GMT
+
+
+=== Recovered Container ===
+Image=localhost:5001/grocery-inventory-dashboard:3 Status=running Ports={"8080/tcp":[{"HostIp":"0.0.0.0","HostPort":"8084"},{"HostIp":"::","HostPort":"8084"}]}
