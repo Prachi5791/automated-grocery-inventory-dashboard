@@ -1,17 +1,16 @@
 pipeline {
     agent any
 
-    parameters {
-        choice(
-            name: 'APP_ENV',
-            choices: ['development', 'production'],
-            description: 'Application environment for deployment'
-        )
-    }
-
     environment {
-        TOMCAT_HOME = '/opt/homebrew/opt/tomcat@10/libexec'
-        WAR_NAME = 'automated-grocery-inventory-dashboard.war'
+        JAVA_HOME = '/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home'
+        PATH = "/usr/local/bin:/opt/homebrew/bin:${env.PATH}"
+
+        REGISTRY = 'localhost:5001'
+        IMAGE_NAME = 'grocery-inventory-dashboard'
+        CONTAINER_PORT = '8086'
+
+        ANSIBLE_INVENTORY = 'ansible/inventory.ini'
+        ANSIBLE_PLAYBOOK = 'ansible/week15/final-provision.yml'
     }
 
     stages {
@@ -22,11 +21,15 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Selenium Quality Gate') {
             steps {
                 sh '''
+                    echo "========================================"
+                    echo "Running Selenium Quality Gate"
+                    echo "========================================"
+
                     export JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
-                    export PATH="$JAVA_HOME/bin:$PATH"
+                    export PATH="$JAVA_HOME/bin:/usr/local/bin:/opt/homebrew/bin:$PATH"
 
                     java -version
                     chmod +x mvnw
@@ -36,11 +39,15 @@ pipeline {
             }
         }
 
-        stage('Package') {
+        stage('Package WAR') {
             steps {
                 sh '''
+                    echo "========================================"
+                    echo "Packaging Application WAR"
+                    echo "========================================"
+
                     export JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
-                    export PATH="$JAVA_HOME/bin:$PATH"
+                    export PATH="$JAVA_HOME/bin:/usr/local/bin:/opt/homebrew/bin:$PATH"
 
                     ./mvnw package -DskipTests
 
@@ -49,18 +56,89 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Build Docker Image') {
             steps {
                 sh '''
-                    echo "Deploying application environment: ${APP_ENV}"
+                    echo "========================================"
+                    echo "Building Versioned Docker Image"
+                    echo "========================================"
 
-                    cp target/*.war \
-                    "$TOMCAT_HOME/webapps/$WAR_NAME"
+                    export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
 
-                    echo "WAR deployed to Tomcat."
-                    echo "Application environment: ${APP_ENV}"
-                    echo "Application URL:"
-                    echo "http://localhost:8082/automated-grocery-inventory-dashboard/items"
+                    IMAGE_TAG="${BUILD_NUMBER}"
+                    FULL_IMAGE="${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+
+                    echo "Build number: ${BUILD_NUMBER}"
+                    echo "Image: ${FULL_IMAGE}"
+
+                    docker build \
+                        -t "${FULL_IMAGE}" \
+                        .
+
+                    docker images "${FULL_IMAGE}"
+                '''
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                sh '''
+                    echo "========================================"
+                    echo "Pushing Docker Image to Local Registry"
+                    echo "========================================"
+
+                    export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
+
+                    IMAGE_TAG="${BUILD_NUMBER}"
+                    FULL_IMAGE="${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+
+                    docker push "${FULL_IMAGE}"
+                '''
+            }
+        }
+
+        stage('Ansible Provision and Deploy') {
+            steps {
+                sh '''
+                    echo "========================================"
+                    echo "Ansible Provisioning and Deployment"
+                    echo "========================================"
+
+                    export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
+
+                    echo "Ansible version:"
+                    ansible-playbook --version
+
+                    echo "Deploying image:"
+                    echo "${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}"
+
+                    ansible-playbook \
+                        -i "${ANSIBLE_INVENTORY}" \
+                        "${ANSIBLE_PLAYBOOK}" \
+                        -e "release_tag=${BUILD_NUMBER}"
+                '''
+            }
+        }
+
+        stage('Final Health Check') {
+            steps {
+                sh '''
+                    echo "========================================"
+                    echo "Final Application Health Check"
+                    echo "========================================"
+
+                    APP_URL="http://localhost:${CONTAINER_PORT}/automated-grocery-inventory-dashboard/items"
+
+                    echo "Checking: ${APP_URL}"
+
+                    curl --fail --silent --show-error \
+                        --retry 5 \
+                        --retry-delay 5 \
+                        --output /dev/null \
+                        "${APP_URL}"
+
+                    echo "HTTP health check: PASSED"
+                    echo "Application is responding successfully."
                 '''
             }
         }
@@ -68,11 +146,20 @@ pipeline {
 
     post {
         success {
-            echo "Pipeline completed successfully for environment: ${APP_ENV}"
+            echo "========================================"
+            echo "FINAL END-TO-END PIPELINE SUCCESS"
+            echo "========================================"
+            echo "Build: ${BUILD_NUMBER}"
+            echo "Docker image: ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}"
+            echo "Application: http://localhost:${CONTAINER_PORT}/automated-grocery-inventory-dashboard/items"
         }
 
         failure {
-            echo 'Pipeline failed. Check the stage logs.'
+            echo "========================================"
+            echo "FINAL PIPELINE FAILED"
+            echo "========================================"
+            echo "Check the failed stage logs."
+            echo "Deployment stages after the failure were not executed."
         }
     }
 }
