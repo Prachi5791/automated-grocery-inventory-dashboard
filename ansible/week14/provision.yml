@@ -1,0 +1,217 @@
+---
+- name: Provision Grocery Inventory Dashboard Reliability Target
+  hosts: app
+  connection: local
+  gather_facts: true
+
+  vars:
+    project_dir: "{{ lookup('env', 'HOME') }}/Documents/projects/automated-grocery-inventory-dashboard"
+
+    deployment_dir: "{{ project_dir }}/ansible/week14"
+
+    container_name: grocery-inventory-week14
+    container_port: "8084"
+
+    stable_image: "localhost:5001/grocery-inventory-dashboard:3"
+
+    mysql_url: "jdbc:mysql://host.docker.internal:3306/grocery_inventory"
+    mysql_user: "root"
+    mysql_password: ""
+
+  tasks:
+
+    # ============================================================
+    # TARGET INFORMATION
+    # ============================================================
+
+    - name: Display target information
+      ansible.builtin.debug:
+        msg:
+          - "Target host: {{ ansible_facts['hostname'] }}"
+          - "Operating system: {{ ansible_facts['distribution'] }}"
+          - "Architecture: {{ ansible_facts['architecture'] }}"
+          - "Application container: {{ container_name }}"
+          - "Application port: {{ container_port }}"
+          - "Stable image: {{ stable_image }}"
+
+
+    # ============================================================
+    # PROVISIONING DIRECTORY
+    # ============================================================
+
+    - name: Ensure Week 14 deployment directory exists
+      ansible.builtin.file:
+        path: "{{ deployment_dir }}"
+        state: directory
+        mode: "0755"
+
+
+    # ============================================================
+    # DOCKER AVAILABILITY
+    # ============================================================
+
+    - name: Verify Docker is available
+      ansible.builtin.command:
+        cmd: docker info
+      register: docker_check
+      changed_when: false
+      failed_when: docker_check.rc != 0
+
+
+    # ============================================================
+    # CHECK EXISTING CONTAINER
+    # ============================================================
+
+    - name: Check whether Week 14 container exists
+      ansible.builtin.command:
+        cmd: docker inspect "{{ container_name }}"
+      register: existing_container
+      changed_when: false
+      failed_when: false
+
+
+    - name: Get existing container image
+      ansible.builtin.command:
+        cmd: docker inspect -f "{{ '{{' }}.Config.Image{{ '}}' }}" "{{ container_name }}"
+      register: existing_image
+      changed_when: false
+      failed_when: false
+      when: existing_container.rc == 0
+
+
+    - name: Get existing container status
+      ansible.builtin.command:
+        cmd: docker inspect -f "{{ '{{' }}.State.Status{{ '}}' }}" "{{ container_name }}"
+      register: existing_status
+      changed_when: false
+      failed_when: false
+      when: existing_container.rc == 0
+
+
+    # ============================================================
+    # DETERMINE WHETHER REDEPLOYMENT IS REQUIRED
+    # ============================================================
+
+    - name: Determine whether container requires deployment
+      ansible.builtin.set_fact:
+        deployment_required: >-
+          {{
+            existing_container.rc != 0
+            or existing_image.stdout | default('') != stable_image
+            or existing_status.stdout | default('') != 'running'
+          }}
+
+
+    - name: Display deployment decision
+      ansible.builtin.debug:
+        msg:
+          - "Existing container found: {{ 'YES' if existing_container.rc == 0 else 'NO' }}"
+          - "Existing image: {{ existing_image.stdout | default('NOT AVAILABLE') }}"
+          - "Existing status: {{ existing_status.stdout | default('NOT AVAILABLE') }}"
+          - "Deployment required: {{ deployment_required }}"
+
+
+    # ============================================================
+    # REMOVE ONLY WHEN DEPLOYMENT IS REQUIRED
+    # ============================================================
+
+    - name: Remove existing container when deployment is required
+      ansible.builtin.command:
+        cmd: docker rm -f "{{ container_name }}"
+      when:
+        - deployment_required
+        - existing_container.rc == 0
+      register: remove_existing_container
+      changed_when: true
+
+
+    # ============================================================
+    # PULL STABLE IMAGE WHEN DEPLOYMENT IS REQUIRED
+    # ============================================================
+
+    - name: Pull stable release image
+      ansible.builtin.command:
+        cmd: docker pull "{{ stable_image }}"
+      register: pull_stable
+      changed_when: true
+      when: deployment_required
+
+
+    # ============================================================
+    # DEPLOY STABLE RELEASE WHEN REQUIRED
+    # ============================================================
+
+    - name: Deploy stable Grocery Inventory release
+      ansible.builtin.command:
+        cmd: >
+          docker run -d
+          --name "{{ container_name }}"
+          -p "{{ container_port }}:8080"
+          -e SPRING_DATASOURCE_URL="{{ mysql_url }}"
+          -e SPRING_DATASOURCE_USERNAME="{{ mysql_user }}"
+          -e SPRING_DATASOURCE_PASSWORD="{{ mysql_password }}"
+          "{{ stable_image }}"
+      register: deploy_stable
+      changed_when: true
+      when: deployment_required
+
+
+    # ============================================================
+    # APPLICATION STARTUP WAIT
+    # ============================================================
+
+    - name: Wait for application startup after deployment
+      ansible.builtin.pause:
+        seconds: 15
+      when: deployment_required
+
+
+    # ============================================================
+    # HEALTH CHECK
+    # ============================================================
+
+    - name: Check application HTTP endpoint
+      ansible.builtin.uri:
+        url: "http://localhost:{{ container_port }}/automated-grocery-inventory-dashboard/items"
+        method: GET
+        status_code: 200
+        return_content: false
+      register: health_check
+      retries: 5
+      delay: 5
+      until: health_check.status == 200
+
+
+    # ============================================================
+    # FINAL CONTAINER VERIFICATION
+    # ============================================================
+
+    - name: Get final Week 14 container status
+      ansible.builtin.command:
+        cmd: docker inspect -f "{{ '{{' }}.State.Status{{ '}}' }}" "{{ container_name }}"
+      register: container_status
+      changed_when: false
+
+
+    - name: Get final Week 14 container image
+      ansible.builtin.command:
+        cmd: docker inspect -f "{{ '{{' }}.Config.Image{{ '}}' }}" "{{ container_name }}"
+      register: container_image
+      changed_when: false
+
+
+    # ============================================================
+    # FINAL RESULT
+    # ============================================================
+
+    - name: Display provisioning result
+      ansible.builtin.debug:
+        msg:
+          - "Provisioning completed successfully."
+          - "Container: {{ container_name }}"
+          - "Container status: {{ container_status.stdout }}"
+          - "Container image: {{ container_image.stdout }}"
+          - "HTTP health check: {{ health_check.status }}"
+          - "Deployment required: {{ deployment_required }}"
+          - "Stable image: {{ stable_image }}"
+          - "Application URL: http://localhost:{{ container_port }}/automated-grocery-inventory-dashboard/items"

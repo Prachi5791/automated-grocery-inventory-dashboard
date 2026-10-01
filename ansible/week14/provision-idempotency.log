@@ -1,0 +1,84 @@
+
+PLAY [Provision Grocery Inventory Dashboard Reliability Target] ****************
+
+TASK [Gathering Facts] *********************************************************
+ok: [localhost]
+
+TASK [Display target information] **********************************************
+ok: [localhost] => {
+    "msg": [
+        "Target host: Prachis-MacBook-Air",
+        "Operating system: MacOSX",
+        "Architecture: arm64",
+        "Application container: grocery-inventory-week14",
+        "Application port: 8084",
+        "Stable image: localhost:5001/grocery-inventory-dashboard:3"
+    ]
+}
+
+TASK [Ensure Week 14 deployment directory exists] ******************************
+ok: [localhost]
+
+TASK [Verify Docker is available] **********************************************
+ok: [localhost]
+
+TASK [Check whether Week 14 container exists] **********************************
+ok: [localhost]
+
+TASK [Get existing container image] ********************************************
+ok: [localhost]
+
+TASK [Get existing container status] *******************************************
+ok: [localhost]
+
+TASK [Determine whether container requires deployment] *************************
+ok: [localhost]
+
+TASK [Display deployment decision] *********************************************
+ok: [localhost] => {
+    "msg": [
+        "Existing container found: YES",
+        "Existing image: localhost:5001/grocery-inventory-dashboard:3",
+        "Existing status: running",
+        "Deployment required: False"
+    ]
+}
+
+TASK [Remove existing container when deployment is required] *******************
+skipping: [localhost]
+
+TASK [Pull stable release image] ***********************************************
+skipping: [localhost]
+
+TASK [Deploy stable Grocery Inventory release] *********************************
+skipping: [localhost]
+
+TASK [Wait for application startup after deployment] ***************************
+skipping: [localhost]
+
+TASK [Check application HTTP endpoint] *****************************************
+ok: [localhost]
+
+TASK [Get final Week 14 container status] **************************************
+ok: [localhost]
+
+TASK [Get final Week 14 container image] ***************************************
+ok: [localhost]
+
+TASK [Display provisioning result] *********************************************
+ok: [localhost] => {
+    "msg": [
+        "Provisioning completed successfully.",
+        "Container: grocery-inventory-week14",
+        "Container status: running",
+        "Container image: localhost:5001/grocery-inventory-dashboard:3",
+        "HTTP health check: 200",
+        "Deployment required: False",
+        "Stable image: localhost:5001/grocery-inventory-dashboard:3",
+        "Application URL: http://localhost:8084/automated-grocery-inventory-dashboard/items"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=13   changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
+
