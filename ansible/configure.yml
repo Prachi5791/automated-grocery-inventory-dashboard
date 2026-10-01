@@ -1,0 +1,249 @@
+---
+- name: Configure Grocery Inventory Dashboard Node
+  hosts: app
+  connection: local
+  gather_facts: true
+
+  vars:
+    project_dir: "{{ lookup('env', 'HOME') }}/Documents/projects/automated-grocery-inventory-dashboard"
+    ansible_dir: "{{ project_dir }}/ansible"
+    config_dir: "{{ project_dir }}/config"
+    config_file: "{{ config_dir }}/application-environment.txt"
+    application_user: "{{ ansible_facts['user_id'] }}"
+
+  tasks:
+
+    # ============================================================
+    # SYSTEM INFORMATION
+    # ============================================================
+
+    - name: Display target system information
+      ansible.builtin.debug:
+        msg:
+          - "Target host: {{ ansible_facts['hostname'] }}"
+          - "Operating system: {{ ansible_facts['distribution'] }}"
+          - "Architecture: {{ ansible_facts['architecture'] }}"
+          - "Python: {{ ansible_facts['python_version'] }}"
+          - "Application user: {{ application_user }}"
+
+
+    # ============================================================
+    # USERS
+    # ============================================================
+
+    - name: Verify application user exists
+      ansible.builtin.command:
+        cmd: "id {{ application_user }}"
+      register: user_check
+      changed_when: false
+      failed_when: user_check.rc != 0
+
+
+    # ============================================================
+    # FOLDERS
+    # ============================================================
+
+    - name: Ensure Ansible directory exists
+      ansible.builtin.file:
+        path: "{{ ansible_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Ensure application configuration directory exists
+      ansible.builtin.file:
+        path: "{{ config_dir }}"
+        state: directory
+        mode: "0755"
+
+
+    # ============================================================
+    # CONFIGURATION FILE
+    # ============================================================
+
+    - name: Create application environment configuration file
+      ansible.builtin.copy:
+        dest: "{{ config_file }}"
+        mode: "0644"
+        content: |
+          Grocery Inventory Dashboard - Environment Configuration
+          ======================================================
+
+          Project Directory: {{ project_dir }}
+          Application User: {{ application_user }}
+
+          Java Requirement: JDK 21
+          Maven Requirement: 3.9.16
+          Git Requirement: 2.55.0
+          Docker Requirement: 29.8.1
+          MySQL Requirement: 26.7.0
+          Ansible Requirement: 2.21.4
+
+          MySQL Port: 3306
+          Jenkins Port: 8080
+          Application Port: 8083
+          Docker Registry Port: 5001
+
+          Database: grocery_inventory
+          Docker Application Container: grocery-inventory-cd
+          Docker Registry Container: grocery-local-registry
+
+
+    # ============================================================
+    # PACKAGE / TOOL PREREQUISITE VERIFICATION
+    # ============================================================
+
+    - name: Verify Java installation
+      ansible.builtin.command:
+        cmd: java -version
+      register: java_check
+      changed_when: false
+      failed_when: java_check.rc != 0
+
+    - name: Verify Maven installation
+      ansible.builtin.command:
+        cmd: mvn -version
+      register: maven_check
+      changed_when: false
+      failed_when: maven_check.rc != 0
+
+    - name: Verify Git installation
+      ansible.builtin.command:
+        cmd: git --version
+      register: git_check
+      changed_when: false
+      failed_when: git_check.rc != 0
+
+    - name: Verify Docker installation
+      ansible.builtin.command:
+        cmd: docker --version
+      register: docker_check
+      changed_when: false
+      failed_when: docker_check.rc != 0
+
+    - name: Verify MySQL installation
+      ansible.builtin.command:
+        cmd: mysql --version
+      register: mysql_check
+      changed_when: false
+      failed_when: mysql_check.rc != 0
+
+    - name: Verify Ansible installation
+      ansible.builtin.command:
+        cmd: ansible --version
+      register: ansible_check
+      changed_when: false
+      failed_when: ansible_check.rc != 0
+
+
+    # ============================================================
+    # PORT VERIFICATION
+    # ============================================================
+
+    - name: Check MySQL port
+      ansible.builtin.shell:
+        cmd: "lsof -nP -iTCP:3306 -sTCP:LISTEN"
+      register: mysql_port
+      changed_when: false
+      failed_when: false
+
+    - name: Check Jenkins port
+      ansible.builtin.shell:
+        cmd: "lsof -nP -iTCP:8080 -sTCP:LISTEN"
+      register: jenkins_port
+      changed_when: false
+      failed_when: false
+
+    - name: Check application port
+      ansible.builtin.shell:
+        cmd: "lsof -nP -iTCP:8083 -sTCP:LISTEN"
+      register: application_port
+      changed_when: false
+      failed_when: false
+
+    - name: Check Docker registry port
+      ansible.builtin.shell:
+        cmd: "lsof -nP -iTCP:5001 -sTCP:LISTEN"
+      register: registry_port
+      changed_when: false
+      failed_when: false
+
+
+    # ============================================================
+    # SERVICE VERIFICATION
+    # ============================================================
+
+    - name: Verify Docker service is available
+      ansible.builtin.command:
+        cmd: docker info
+      register: docker_service
+      changed_when: false
+      failed_when: docker_service.rc != 0
+
+    - name: Check Grocery Inventory application container
+      ansible.builtin.command:
+        cmd: docker inspect -f "{{ '{{' }}.State.Status{{ '}}' }}" grocery-inventory-cd
+      register: application_container
+      changed_when: false
+      failed_when: false
+
+    - name: Check local Docker registry container
+      ansible.builtin.command:
+        cmd: docker inspect -f "{{ '{{' }}.State.Status{{ '}}' }}" grocery-local-registry
+      register: registry_container
+      changed_when: false
+      failed_when: false
+
+
+    # ============================================================
+    # DISPLAY PACKAGE VERIFICATION
+    # ============================================================
+
+    - name: Display prerequisite verification
+      ansible.builtin.debug:
+        msg:
+          - "Java: {{ java_check.stderr | default(java_check.stdout) }}"
+          - "Maven: {{ maven_check.stdout_lines[0] | default('Available') }}"
+          - "Git: {{ git_check.stdout }}"
+          - "Docker: {{ docker_check.stdout }}"
+          - "MySQL: {{ mysql_check.stdout }}"
+          - "Ansible: {{ ansible_check.stdout_lines[0] | default('Available') }}"
+          - "Application user: {{ application_user }}"
+
+
+    # ============================================================
+    # DISPLAY PORT VERIFICATION
+    # ============================================================
+
+    - name: Display port verification
+      ansible.builtin.debug:
+        msg:
+          - "MySQL port 3306: {{ 'LISTENING' if mysql_port.stdout | length > 0 else 'NOT LISTENING' }}"
+          - "Jenkins port 8080: {{ 'LISTENING' if jenkins_port.stdout | length > 0 else 'NOT LISTENING' }}"
+          - "Application port 8083: {{ 'LISTENING' if application_port.stdout | length > 0 else 'NOT LISTENING' }}"
+          - "Registry port 5001: {{ 'LISTENING' if registry_port.stdout | length > 0 else 'NOT LISTENING' }}"
+
+
+    # ============================================================
+    # DISPLAY SERVICE VERIFICATION
+    # ============================================================
+
+    - name: Display service verification
+      ansible.builtin.debug:
+        msg:
+          - "Docker service: {{ 'RUNNING' if docker_service.rc == 0 else 'NOT RUNNING' }}"
+          - "Grocery Inventory container: {{ application_container.stdout | default('NOT FOUND') }}"
+          - "Docker Registry container: {{ registry_container.stdout | default('NOT FOUND') }}"
+
+
+    # ============================================================
+    # COMPLETION
+    # ============================================================
+
+    - name: Display configuration completion
+      ansible.builtin.debug:
+        msg:
+          - "Configuration management completed successfully."
+          - "Application directory: {{ project_dir }}"
+          - "Ansible directory: {{ ansible_dir }}"
+          - "Configuration directory: {{ config_dir }}"
+          - "Configuration file: {{ config_file }}"
