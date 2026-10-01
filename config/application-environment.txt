@@ -1,0 +1,21 @@
+Grocery Inventory Dashboard - Environment Configuration
+======================================================
+
+Project Directory: /Users/prachipatil/Documents/projects/automated-grocery-inventory-dashboard
+Application User: prachipatil
+
+Java Requirement: JDK 21
+Maven Requirement: 3.9.16
+Git Requirement: 2.55.0
+Docker Requirement: 29.8.1
+MySQL Requirement: 26.7.0
+Ansible Requirement: 2.21.4
+
+MySQL Port: 3306
+Jenkins Port: 8080
+Application Port: 8083
+Docker Registry Port: 5001
+
+Database: grocery_inventory
+Docker Application Container: grocery-inventory-cd
+Docker Registry Container: grocery-local-registry

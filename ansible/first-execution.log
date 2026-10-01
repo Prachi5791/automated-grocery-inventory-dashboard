@@ -1,0 +1,114 @@
+
+PLAY [Configure Grocery Inventory Dashboard Node] ******************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [localhost]
+
+TASK [Display target system information] ***************************************
+ok: [localhost] => {
+    "msg": [
+        "Target host: Prachis-MacBook-Air",
+        "Operating system: MacOSX",
+        "Architecture: arm64",
+        "Python: 3.14.7",
+        "Application user: prachipatil"
+    ]
+}
+
+TASK [Verify application user exists] ******************************************
+ok: [localhost]
+
+TASK [Ensure Ansible directory exists] *****************************************
+ok: [localhost]
+
+TASK [Ensure application configuration directory exists] ***********************
+ok: [localhost]
+
+TASK [Create application environment configuration file] ***********************
+changed: [localhost]
+
+TASK [Verify Java installation] ************************************************
+ok: [localhost]
+
+TASK [Verify Maven installation] ***********************************************
+ok: [localhost]
+
+TASK [Verify Git installation] *************************************************
+ok: [localhost]
+
+TASK [Verify Docker installation] **********************************************
+ok: [localhost]
+
+TASK [Verify MySQL installation] ***********************************************
+ok: [localhost]
+
+TASK [Verify Ansible installation] *********************************************
+ok: [localhost]
+
+TASK [Check MySQL port] ********************************************************
+ok: [localhost]
+
+TASK [Check Jenkins port] ******************************************************
+ok: [localhost]
+
+TASK [Check application port] **************************************************
+ok: [localhost]
+
+TASK [Check Docker registry port] **********************************************
+ok: [localhost]
+
+TASK [Verify Docker service is available] **************************************
+ok: [localhost]
+
+TASK [Check Grocery Inventory application container] ***************************
+ok: [localhost]
+
+TASK [Check local Docker registry container] ***********************************
+ok: [localhost]
+
+TASK [Display prerequisite verification] ***************************************
+ok: [localhost] => {
+    "msg": [
+        "Java: openjdk version \"21.0.12.1\" 2026-08-18\nOpenJDK Runtime Environment Homebrew (build 21.0.12.1)\nOpenJDK 64-Bit Server VM Homebrew (build 21.0.12.1, mixed mode, sharing)",
+        "Maven: Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)",
+        "Git: git version 2.55.0",
+        "Docker: Docker version 29.8.1, build 4a63305",
+        "MySQL: mysql  Ver 26.7.0 for macos26.6 on arm64 (Homebrew)",
+        "Ansible: ansible [core 2.21.4]",
+        "Application user: prachipatil"
+    ]
+}
+
+TASK [Display port verification] ***********************************************
+ok: [localhost] => {
+    "msg": [
+        "MySQL port 3306: LISTENING",
+        "Jenkins port 8080: LISTENING",
+        "Application port 8083: LISTENING",
+        "Registry port 5001: LISTENING"
+    ]
+}
+
+TASK [Display service verification] ********************************************
+ok: [localhost] => {
+    "msg": [
+        "Docker service: RUNNING",
+        "Grocery Inventory container: running",
+        "Docker Registry container: running"
+    ]
+}
+
+TASK [Display configuration completion] ****************************************
+ok: [localhost] => {
+    "msg": [
+        "Configuration management completed successfully.",
+        "Application directory: /Users/prachipatil/Documents/projects/automated-grocery-inventory-dashboard",
+        "Ansible directory: /Users/prachipatil/Documents/projects/automated-grocery-inventory-dashboard/ansible",
+        "Configuration directory: /Users/prachipatil/Documents/projects/automated-grocery-inventory-dashboard/config",
+        "Configuration file: /Users/prachipatil/Documents/projects/automated-grocery-inventory-dashboard/config/application-environment.txt"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=23   changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
