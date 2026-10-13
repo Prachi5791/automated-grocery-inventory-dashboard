@@ -242,29 +242,28 @@
         Main
     </div>
 
-    <a th:href="@{/items}"
-       class="menu-item">
-        📦 Inventory
-    </a>
+    <a th:href="@{/items(role=${role})}"
+   class="menu-item">
+    📦 Inventory
+</a>
 
-    <a href="#"
-       class="menu-item">
-        📊 Dashboard
-    </a>
 
-    <a th:href="@{/transactions}"
-       class="menu-item">
-        🔄 Transactions
-    </a>
+
+<a th:if="${role == 'ADMIN'}"
+   th:href="@{/transactions(role=${role})}"
+   class="menu-item">
+    🔄 Transactions
+</a>
 
     <div class="menu-title">
         Management
     </div>
 
-    <a th:href="@{/alerts}"
-       class="menu-item active">
-        ⚠ Alerts
-    </a>
+<a th:if="${role == 'ADMIN'}"
+   th:href="@{/alerts(role=${role})}"
+   class="menu-item active">
+    ⚠ Alerts
+</a>
 
     <a href="#"
        class="menu-item">
@@ -288,25 +287,28 @@
 
         </div>
 
-        <div class="user">
+<div class="user">
 
-            <strong>Admin</strong>
+    <strong th:text="${role}">
+        Admin
+    </strong>
 
-            <div class="avatar">
-                P
-            </div>
+    <div class="avatar"
+         th:text="${role == 'CUSTOMER' ? 'C' : 'A'}">
+        A
+    </div>
 
-        </div>
+</div>
 
     </div>
 
 
-    <a th:href="@{/items}"
-       class="back-link">
+<a th:href="@{/items(role=${role})}"
+   class="back-link">
 
-        ← Back to Inventory
+    ← Back to Inventory
 
-    </a>
+</a>
 
 
     <!-- TOTAL ALERTS -->

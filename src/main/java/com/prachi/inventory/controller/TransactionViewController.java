@@ -2,6 +2,7 @@ package com.prachi.inventory.controller;
 
 import com.prachi.inventory.service.ItemService;
 import com.prachi.inventory.service.TransactionService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,17 +22,26 @@ public class TransactionViewController {
     }
 
     @GetMapping
-    public String showTransactions(Model model) {
+    public String showTransactions(
+            Model model,
+            HttpSession session) {
 
-        model.addAttribute(
-                "transactions",
-                transactionService.getAllTransactions()
-        );
+        String role = (String) session.getAttribute("role");
 
-        model.addAttribute(
-                "items",
-                itemService.getAllItems()
-        );
+        // First visit defaults to Admin.
+        if (role == null) {
+            role = "ADMIN";
+            session.setAttribute("role", role);
+        }
+
+        // Customer cannot access Transactions.
+        if (!role.equals("ADMIN")) {
+            return "redirect:/items";
+        }
+
+        loadPage(model, null);
+
+        model.addAttribute("role", role);
 
         return "transactions";
     }
@@ -41,7 +51,20 @@ public class TransactionViewController {
             @RequestParam Long itemId,
             @RequestParam Integer quantity,
             @RequestParam(required = false) String note,
-            Model model) {
+            Model model,
+            HttpSession session) {
+
+        String role = (String) session.getAttribute("role");
+
+        if (role == null) {
+            role = "ADMIN";
+            session.setAttribute("role", role);
+        }
+
+        // Customer cannot perform Stock In.
+        if (!role.equals("ADMIN")) {
+            return "redirect:/items";
+        }
 
         try {
 
@@ -57,6 +80,8 @@ public class TransactionViewController {
 
             loadPage(model, e.getMessage());
 
+            model.addAttribute("role", role);
+
             return "transactions";
         }
     }
@@ -66,7 +91,20 @@ public class TransactionViewController {
             @RequestParam Long itemId,
             @RequestParam Integer quantity,
             @RequestParam(required = false) String note,
-            Model model) {
+            Model model,
+            HttpSession session) {
+
+        String role = (String) session.getAttribute("role");
+
+        if (role == null) {
+            role = "ADMIN";
+            session.setAttribute("role", role);
+        }
+
+        // Customer cannot perform Stock Out.
+        if (!role.equals("ADMIN")) {
+            return "redirect:/items";
+        }
 
         try {
 
@@ -82,13 +120,17 @@ public class TransactionViewController {
 
             loadPage(model, e.getMessage());
 
+            model.addAttribute("role", role);
+
             return "transactions";
         }
     }
 
     private void loadPage(Model model, String error) {
 
-        model.addAttribute("error", error);
+        if (error != null) {
+            model.addAttribute("error", error);
+        }
 
         model.addAttribute(
                 "transactions",
