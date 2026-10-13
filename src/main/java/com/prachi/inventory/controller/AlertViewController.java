@@ -2,6 +2,7 @@ package com.prachi.inventory.controller;
 
 import com.prachi.inventory.model.Item;
 import com.prachi.inventory.service.ItemService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +22,22 @@ public class AlertViewController {
     }
 
     @GetMapping
-    public String showAlerts(Model model) {
+    public String showAlerts(
+            Model model,
+            HttpSession session) {
+
+        String role = (String) session.getAttribute("role");
+
+        // First visit defaults to Admin.
+        if (role == null) {
+            role = "ADMIN";
+            session.setAttribute("role", role);
+        }
+
+        // Customer cannot access Alerts.
+        if (!role.equals("ADMIN")) {
+            return "redirect:/items";
+        }
 
         List<Item> items = itemService.getAllItems();
 
@@ -39,13 +55,22 @@ public class AlertViewController {
                                 && item.getQuantity() <= item.getReorderLevel())
                 .collect(Collectors.toList());
 
-        model.addAttribute("outOfStockItems", outOfStockItems);
-        model.addAttribute("lowStockItems", lowStockItems);
+        model.addAttribute(
+                "outOfStockItems",
+                outOfStockItems
+        );
+
+        model.addAttribute(
+                "lowStockItems",
+                lowStockItems
+        );
 
         model.addAttribute(
                 "totalAlerts",
                 outOfStockItems.size() + lowStockItems.size()
         );
+
+        model.addAttribute("role", role);
 
         return "alerts";
     }

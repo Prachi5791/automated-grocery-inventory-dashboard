@@ -442,11 +442,6 @@
             📦 Inventory
         </a>
 
-        <a href="#"
-           class="menu-item">
-            📊 Dashboard
-        </a>
-
         <!-- WEEK 6: TRANSACTIONS -->
         <a th:href="@{/transactions}"
            class="menu-item">
@@ -490,13 +485,37 @@
 
             <div class="user">
 
-                <strong>Admin</strong>
+    <form method="get" th:action="@{/items}">
+        <select name="role"
+                onchange="this.form.submit()"
+                style="
+                    padding: 8px 12px;
+                    border: 1px solid #d1d5db;
+                    border-radius: 7px;
+                    background: white;
+                    font-size: 13px;
+                    cursor: pointer;
+                ">
 
-                <div class="avatar">
-                    P
-                </div>
+            <option value="ADMIN"
+                    th:selected="${role == 'ADMIN'}">
+                Admin
+            </option>
 
-            </div>
+            <option value="CUSTOMER"
+                    th:selected="${role == 'CUSTOMER'}">
+                Customer
+            </option>
+
+        </select>
+    </form>
+
+    <div class="avatar"
+         th:text="${role == 'ADMIN' ? 'A' : 'C'}">
+        A
+    </div>
+
+</div>
 
         </div>
 
@@ -647,7 +666,7 @@
 
             <!-- ================= ADD ITEM FORM ================= -->
 
-            <div class="form-section"
+            <div th:if="${role == 'ADMIN'}" class="form-section"
                  id="add-form">
 
                 <form th:action="@{/items}"
@@ -904,7 +923,8 @@
                         <td>
 
                             <a class="action edit"
-                               th:href="@{/items/edit/{id}(id=${item.id})}">
+                               th:href="@{/items/edit/{id}(id=${item.id})}"
+                               th:if="${role == 'ADMIN'}">
 
                                 Edit
 
@@ -913,7 +933,8 @@
 
                             <a class="action delete"
                                th:href="@{/items/delete/{id}(id=${item.id})}"
-                               onclick="return confirm('Delete this item?');">
+                               onclick="return confirm('Delete this item?');"
+                               th:if="${role == 'ADMIN'}">
 
                                 Delete
 

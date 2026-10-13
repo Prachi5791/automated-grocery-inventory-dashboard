@@ -130,9 +130,9 @@
 
     <div class="card">
 
-        <form th:action="@{/items/update/{id}(id=${item.id})}"
-              th:object="${item}"
-              method="post">
+        <form th:action="@{/items/update/{id}(id=${item.id},role=${role})}"
+      th:object="${item}"
+      method="post">
 
             <div class="form-grid">
 
@@ -204,10 +204,10 @@
 
             <div class="actions">
 
-                <a href="/items"
-                   class="cancel">
-                    Cancel
-                </a>
+                <a th:href="@{/items(role=${role})}"
+   class="cancel">
+    Cancel
+</a>
 
                 <button type="submit">
                     Save Changes
