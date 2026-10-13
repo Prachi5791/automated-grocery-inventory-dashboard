@@ -27,7 +27,6 @@ The system provides a centralized platform for managing grocery items, inventory
 
 ## Project Structure
 
-```text
 automated-grocery-inventory-dashboard/
 ├── src/
 │   ├── main/
@@ -39,3 +38,33 @@ automated-grocery-inventory-dashboard/
 ├── pom.xml
 ├── mvnw
 └── mvnw.cmd
+
+**#### Future Work**
+- [ ] Dashboard analytics and visualizations
+- [ ] Automated reorder recommendations
+- [ ] Supplier management
+- [ ] Automated notifications
+- [ ] Advanced reporting
+
+**## Admin and Customer Role Access**
+
+### Completed
+
+- Added Admin and Customer profile switching without login or authentication.
+- Admin can:
+  - Create, update, and delete inventory items.
+  - Perform Stock In and Stock Out transactions.
+  - View inventory exception alerts.
+  - Access transaction history.
+- Customer can:
+  - View inventory.
+  - Search inventory.
+  - Filter inventory by category.
+- Customer access is restricted from:
+  - Adding, editing, or deleting items.
+  - Performing Stock In or Stock Out transactions.
+  - Accessing Transactions and Alerts pages.
+- Implemented session-based role persistence across pages.
+- Added backend access control for restricted Admin functionality.
+- Added role-based sidebar navigation.
+- Verified Customer and Admin access after merging the feature into `develop`.
